@@ -35,5 +35,5 @@ To run the notebooks, the following Python libraries are required:
 
 1. Clone the repository:
    ```sh
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/IngoMTFritz/circuit-stability-development.git
+   cd https://github.com/IngoMTFritz/circuit-stability-development.git
