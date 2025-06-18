@@ -1,6 +1,6 @@
 # Synaptic density and relative connectivity conservation maintain circuit stability across development
 
-# Overview of the Repository
+## Overview of the Repository
 
 This repository contains the code and data used to generate the figures for the publication. Each figure is associated with a specific Jupyter notebook, which contains the analysis and visualization steps. The repository is organized as follows:
 
@@ -28,12 +28,18 @@ This repository contains the code and data used to generate the figures for the 
 To run the notebooks, the following Python libraries are required:
 
 - **Specialized Libraries**:
-  - `pymaid`: For interacting with CATMAID instances.
-  - `navis`: For neuron analysis and visualization.
+  - [`pymaid`](https://github.com/navis-org/pymaid): For interacting with CATMAID instances. Install using:
+    ```bash
+    pip3 install python-catmaid
+    ```
+  - [`navis`](https://github.com/navis-org/navis): For neuron analysis and visualization. Install with all extras using:
+    ```bash
+    pip3 install "navis[all]"
+    ```
 
 ## Instructions for Use
 
 1. Clone the repository:
-   ```sh
+   ```bash
    git clone https://github.com/IngoMTFritz/circuit-stability-development.git
-   cd https://github.com/IngoMTFritz/circuit-stability-development.git
+   cd circuit-stability-development
