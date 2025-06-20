@@ -2,30 +2,39 @@
 
 ## Overview of the Repository
 
-This repository contains the code and data used to generate the figures for the publication. Each figure is associated with a specific Jupyter notebook, which contains the analysis and visualization steps. The repository is organized as follows:
+This repository contains the code and data used to generate the figures for the publication. Each figure is associated with a specific script or Jupyter notebook, which contains the analysis and visualization steps. The repository is organized as follows:
 
 ## Repository Structure
 
-- **Jupyter Notebooks**:  
-  Each figure has a corresponding notebook:
+- **Scripts and Jupyter Notebooks**:
   - `Fig2_S1.ipynb`: Analysis and plots for Figure 2 and Supplementary Figure 1.
   - `Fig3_S2.ipynb`: Analysis and plots for Figure 3 and Supplementary Figure 2.
   - `Fig4_S3.ipynb`: Analysis and plots for Figure 4 and Supplementary Figure 3.
-  - `Fig5_S4_S5.ipynb`: Analysis and plots for Figure 5 and Supplementary Figures 4 and 5.
+  - `Figure_6B_S6_mean_levels.m`: MATLAB script for analysis and plots related to Figure 6A and 6B.
+  - `Figure_6DE_real_rel_weights.m`: MATLAB script for analysis and plots related to Figure 6C (likely for relative weights).
 
-- **Data Files**:  
-  - `l1_PSD_areas.pkl` and `l3_PSD_areas.pkl`: Preprocessed data files used in the analysis.
 
-- **Plots Directory**:  
-  - Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved.
+- **Data Files**:
+  - `l1_PSD_areas.pkl` and `l3_PSD_areas.pkl`: Preprocessed data files used in the analysis (for Python notebooks).
+  - `MATLAB model/data_swc_processed/`: Folder containing SWC files, likely neuron morphology data, used by the MATLAB scripts.
+  - `MATLAB model/data/density_l1_l3_dendrite.csv`: Data file for synapse densities used by the MATLAB scripts.
+  - `MATLAB model/data/t.mat`: Output data file from the MATLAB script `Figure_6B_S6_mean_levels.m`.
 
-- **Source Code**:  
-  - `helper.py`: Contains utility functions for data processing and analysis.
-  - `plot_settings.py`: Contains matplotlib style settings for consistent figure formatting.
+- **Plots Directory**:
+  - Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved. The MATLAB scripts will output plots to `MATLAB model/output_plots/`.
+
+- **Source Code**:
+  - `helper.py`: Contains utility functions for data processing and analysis (for Python notebooks).
+  - `plot_settings.py`: Contains matplotlib style settings for consistent figure formatting (for Python notebooks).
+  - `MATLAB model/compute_r2.m`: MATLAB function used for R-squared calculations.
+  - `MATLAB model/plotBinnedAverages.m`: MATLAB function used for plotting binned averages.
+  - `MATLAB model/process_swc_synapses.m`: MATLAB script for processing SWC synapse data.
+  - `MATLAB model/rel_weights.m`: MATLAB script used to get the relative weights of a neuron.
 
 ## Required Toolboxes and Libraries
 
-To run the notebooks, the following Python libraries are required:
+### Python
+To run the Python notebooks, the following Python libraries are required:
 
 - **Specialized Libraries**:
   - [`pymaid`](https://github.com/navis-org/pymaid): For interacting with CATMAID instances. Install using:
@@ -36,10 +45,17 @@ To run the notebooks, the following Python libraries are required:
     ```bash
     pip3 install "navis[all]"
     ```
+- **General Libraries**: (Add any other common libraries like `numpy`, `pandas`, `matplotlib`, `scipy` if they are used in the notebooks).
+
+### MATLAB
+To run the MATLAB scripts, you will need:
+
+- **MATLAB**: The scripts are written in MATLAB and require a working MATLAB installation.
+- **TREES Toolbox**: The scripts rely heavily on functions from the [TREES Toolbox](https://www.treestoolbox.org/). You must download and add the TREES Toolbox to your MATLAB path for the scripts to execute correctly.
 
 ## Instructions for Use
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/IngoMTFritz/circuit-stability-development.git
+   git clone [https://github.com/IngoMTFritz/circuit-stability-development.git](https://github.com/IngoMTFritz/circuit-stability-development.git)
    cd circuit-stability-development
