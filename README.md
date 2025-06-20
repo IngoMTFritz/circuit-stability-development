@@ -16,12 +16,13 @@ This repository contains the code and data used to generate the figures for the 
 
 - **Data Files**:
   - `l1_PSD_areas.pkl` and `l3_PSD_areas.pkl`: Preprocessed data files used in the analysis (for Python notebooks).
-  - `MATLAB model/data_swc_processed/`: Folder containing SWC files, likely neuron morphology data, used by the MATLAB scripts.
+  - `MATLAB model/data_swc_processed/`: Folder containing SWC files iwht the neuron morphology data used by the MATLAB scripts.
   - `MATLAB model/data/density_l1_l3_dendrite.csv`: Data file for synapse densities used by the MATLAB scripts.
   - `MATLAB model/data/t.mat`: Output data file from the MATLAB script `Figure_6B_S6_mean_levels.m`.
 
 - **Plots Directory**:
-  - Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved. The MATLAB scripts will output plots to `MATLAB model/output_plots/`.
+  - 'plots/': Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved.
+  - 'MATLAB model/output_plots/': Plots generate by the MATLAB scripts.
 
 - **Source Code**:
   - `helper.py`: Contains utility functions for data processing and analysis (for Python notebooks).
@@ -50,8 +51,7 @@ To run the Python notebooks, the following Python libraries are required:
 ### MATLAB
 To run the MATLAB scripts, you will need:
 
-- **MATLAB**: The scripts are written in MATLAB and require a working MATLAB installation.
-- **TREES Toolbox**: The scripts rely heavily on functions from the [TREES Toolbox](https://www.treestoolbox.org/). You must download and add the TREES Toolbox to your MATLAB path for the scripts to execute correctly.
+- **TREES Toolbox**: Most MATLAB scripts rely on functions from the [TREES Toolbox](https://www.treestoolbox.org/).
 
 ## Instructions for Use
 
