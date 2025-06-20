@@ -20,8 +20,8 @@ This repository contains the code and data used to generate the figures for the 
   - Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved.
 
 - **Source Code**:  
-  - `src/helper.py`: Contains utility functions for data processing and analysis.
-  - `src/plot_settings.py`: Contains matplotlib style settings for consistent figure formatting.
+  - `helper.py`: Contains utility functions for data processing and analysis.
+  - `plot_settings.py`: Contains matplotlib style settings for consistent figure formatting.
 
 ## Required Toolboxes and Libraries
 
