@@ -10,8 +10,8 @@ This repository contains the code and data used to generate the figures for the 
   - `Fig2_S1.ipynb`: Analysis and plots for Figure 2 and Supplementary Figure 1.
   - `Fig3_S2.ipynb`: Analysis and plots for Figure 3 and Supplementary Figure 2.
   - `Fig4_S3.ipynb`: Analysis and plots for Figure 4 and Supplementary Figure 3.
-  - `Figure_6B_S6_mean_levels.m`: MATLAB script for analysis and plots related to Figure 6A and 6B.
-  - `Figure_6DE_real_rel_weights.m`: MATLAB script for analysis and plots related to Figure 6C (likely for relative weights).
+  - `Figure_6B_S6_mean_levels.m`: MATLAB script for analysis and plots related to Figure 6B and Supplementary Figure 6.
+  - `Figure_6DE_real_rel_weights.m`: MATLAB script for analysis and plots related to Figure 6D and E.
 
 
 - **Data Files**:
