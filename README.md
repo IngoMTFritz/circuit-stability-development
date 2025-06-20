@@ -21,8 +21,8 @@ This repository contains the code and data used to generate the figures for the 
   - `MATLAB model/data/t.mat`: Output data file from the MATLAB script `Figure_6B_S6_mean_levels.m`.
 
 - **Plots Directory**:
-  - 'plots/': Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved.
-  - 'MATLAB model/output_plots/': Plots generate by the MATLAB scripts.
+  - `plots/`: Contains subdirectories for each figure (`Fig2/`, `Fig3/`, etc.) where generated plots are saved.
+  - `MATLAB model/output_plots/`: Plots generate by the MATLAB scripts.
 
 - **Source Code**:
   - `helper.py`: Contains utility functions for data processing and analysis (for Python notebooks).
