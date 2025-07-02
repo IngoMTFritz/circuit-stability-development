@@ -8,11 +8,12 @@ This repository contains the code and data used to generate the figures for the 
 
 - **Scripts and Jupyter Notebooks**:
   - `Fig2_S1.ipynb`: Analysis and plots for Figure 2 and Supplementary Figure 1.
-  - `Fig3_S2.ipynb`: Analysis and plots for Figure 3 and Supplementary Figure 2.
-  - `Fig4_S3.ipynb`: Analysis and plots for Figure 4 and Supplementary Figure 3.
-  - `MATLAB model/Figure_6B_S6_mean_levels.m`: MATLAB script for analysis and plots related to Figure 6B and Supplementary Figure 6.
-  - `MATLAB model/Figure_6DE_real_rel_weights.m`: MATLAB script for analysis and plots related to Figure 6D and E.
-
+  - `Fig3.ipynb`: Analysis and plots for Figure 3.
+  - `Fig4_S2.ipynb`: Analysis and plots for Figure 4 and Supplementary Figure 2.
+  - `Fig5_S3.ipynb`: Analysis and plots for Figure 5 and Supplementary Figure 3.
+  - `Fig6_S4_S5.ipynb`: Analysis and plots for Figure 6 and Supplementary Figure 4 and 5.
+  - `MATLAB model/Figure_7B_S6_mean_levels.m`: MATLAB script for analysis and plots related to Figure 7B and Supplementary Figure 6.
+  - `MATLAB model/Figure_7DE_real_rel_weights.m`: MATLAB script for analysis and plots related to Figure 7D and E.
 
 - **Data Files**:
   - `l1_PSD_areas.pkl` and `l3_PSD_areas.pkl`: Preprocessed data files used in the analysis (for Python notebooks).
