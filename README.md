@@ -47,7 +47,7 @@ To run the Python notebooks, the following Python libraries are required:
     ```bash
     pip3 install "navis[all]"
     ```
-- **General Libraries**: (Add any other common libraries like `numpy`, `pandas`, `matplotlib`, `scipy` if they are used in the notebooks).
+- **General Libraries**: Add any other common libraries like `numpy`, `pandas`, `matplotlib`, `scipy` if they are used in the notebooks.
 
 ### MATLAB
 To run the MATLAB scripts, you will need:
