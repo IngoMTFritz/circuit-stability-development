@@ -58,5 +58,5 @@ To run the MATLAB scripts, you will need:
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/IngoMTFritz/circuit-stability-development.git](https://github.com/IngoMTFritz/circuit-stability-development.git)
+   git clone https://github.com/IngoMTFritz/circuit-stability-development.git
    cd circuit-stability-development
