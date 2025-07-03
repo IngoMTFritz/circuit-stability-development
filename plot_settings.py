@@ -1,6 +1,7 @@
 import matplotlib as plt
 
-params = {"font.family": "Arial",
+params = {
+        #   "font.family": "Arial",
           "legend.fontsize": 14,
           "legend.handlelength": 1.5,
           "legend.edgecolor": 'inherit',
