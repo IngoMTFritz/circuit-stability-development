@@ -68,7 +68,24 @@ end
 save('data/t', 't');
 %% Plot l1
 
-Vsyn            = 10*1/mean_den; %mV generic spiking threshold in Gunay
+    % Given or known constants
+    Ee               = 40;% generic fly cell from Cuntz et al.
+    Ei               = 0;
+    Gm               = tree.Gm;      % S/cm2
+    GmU              = 10 * Gm;      % in nS/um2
+    delta            = compute_overshoot(mean_den, GmU, mD, Ee, 8);
+    Vdist            = (8+delta)*1/mean_den; % 8mV generic spiking threshold in Gunay
+
+% Vdist estimates the voltage needed at a distal dendritic site to produce an 8 mV local depolarization with synaptic conductances.
+% The expression Vdist = (8 + delta=2) * 1 / mean_den approximates the current needed (Idist), assuming I = V * Gmpd.
+% The extra 2 mV is added to compensate for the fact that in conductance-based synapses,
+% Vsyn = Isyn * Gmpd + Gsyn — the synaptic conductance reduces voltage efficacy, so more current
+% (and thus more initial voltage) is required to reach the same 8 mV target.
+%
+% This formulation also assumes a synaptic density of 1 per unit length. Since our neurons use a lower
+% synaptic density (mean_den), each synapse must be stronger to maintain the same local depolarization.
+% Therefore, Vdist is scaled inversely with mean_den to ensure that Vsyn remains sufficient (~8 mV).
+
 
 %store values
 synprox_mean_store = zeros(length(t), 50); % 50 relative weights activated
@@ -83,15 +100,10 @@ for i = 1:length(t)
     tree             = t{i};
     N                = length (tree.X);
     Pvec             = Pvec_tree (tree);
-    % Given or known constants
-    Ee               = 40;% generic fly cell from Cuntz et al.
-    Ei               = 0;
-    Gm               = tree.Gm;      % S/cm2
-    GmU              = 10 * Gm;      % in nS/um2
-    Idist            = Vsyn*t{1}.Gm * pi * mD*10;                            % pA/(0.01*1/mean_denum)
-    gsynT            = Idist / Ee;
-    ge_total         = gsynT / 1000;                          % Total ge when homogeneous
-    Vdist            = (Idist/(1/mean_den) /10) ./ (t{1}.Gm * pi * mD+ (gsynT/(1/mean_den)/10));
+    Idist            = Vdist*GmU * pi * mD;   % pA/(0.01*1/mean_den/um) to get units right
+    gsynT            = Idist / Ee; % Ohm's law
+    ge_total         = gsynT / 1000; % Total ge when homogeneous. /1000 to match units of syn_tree function
+    Vsyn             = (Idist/(1/mean_den)) ./ (GmU * pi * mD+ (gsynT/(1/mean_den)));
     gi               = zeros  (N, 1);
     I                = zeros  (N, 1);
     L    (i)         = sum  (len_tree (t{i})) ;    % in um
@@ -178,10 +190,11 @@ scatter(L(1:12), synprox_mean_store(1:12,1), 10, c_l1, 'filled');
 scatter(L(13:end), synprox_mean_store(13:end,1), 10, c_l3, 'filled');
 scatter(L(1:12), syndist_mean_store(1:12,1), 10, c_l1, 'filled');
 scatter(L(13:end), syndist_mean_store(13:end,1), 10, c_l3, 'filled');
+save('data_output/Fig7B.mat', 'L', 'synprox_mean_store');  % Save variables you want
 
 pagesize         = [5 4]; % (x, y) size in cm
 
-yline(Vdist, '--','linewidth',0.5); % Add label and line style
+yline(Vsyn, '--','linewidth',0.5); % Add label and line style
 
 xlabel  ('Length (\mum)');
 ylabel  ('Voltage (mV)');
@@ -200,7 +213,7 @@ set              (gca, ...
     'xscale',                  'log', ...
     'fontname',                'arial');
 
-nRMSE   = sqrt (mean (((synprox_mean_store(:,1) - Vdist)./synprox_mean_store(:,1)).^2)) % 0.12% 
+nRMSE   = sqrt (mean (((synprox_mean_store(:,1) - Vsyn)./synprox_mean_store(:,1)).^2)) % 0.12% 
 
 tprint           (          ...
     'output_plots/Figure 7B - L vs V',   ...
@@ -223,9 +236,9 @@ psyn = flip(100 * n./R); % Relative weights [%]
 errorbar(psyn, syn_mean, syn_std, 'LineWidth', 1,...
     'DisplayName', 'Distal Removal','CapSize', 0, 'Color', c_l1);
 
-% Target Vdist as reference
+% Target Vsyn as reference
 xax = 0:100;
-yax = Vdist * xax / 100;
+yax = Vsyn * xax / 100;
 plot(xax, yax, 'k--', 'LineWidth', 1.5, 'DisplayName', 'Target V_{dist}');
 
 xlim             ([0 100]);
@@ -318,9 +331,9 @@ psyn = flip(100 * n./R); % Relative weights [%]
 errorbar(psyn, syn_mean, syn_std, 'LineWidth', 1,...
     'DisplayName', 'Distal Removal','CapSize', 0,'Color', c_l3);
 
-% Target Vdist as reference
+% Target Vsyn as reference
 xax = 0:100;
-yax = Vdist * xax / 100;
+yax = Vsyn * xax / 100;
 plot(xax, yax, 'k--', 'LineWidth', 1.5, 'DisplayName', 'Target V_{dist}');
 
 xlim             ([0 100]);

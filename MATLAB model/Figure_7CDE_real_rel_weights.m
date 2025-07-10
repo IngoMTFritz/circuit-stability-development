@@ -48,7 +48,7 @@ min_length = min(length(vector1), length(vector2));
 vector1 = vector1(1:min_length);
 vector2 = vector2(1:min_length);
 
-pagesize         = [5 4]; % (x, y) size in cm
+pagesize         = [5 5]; % (x, y) size in cm
 
 % Create scatter plot
 figure; hold on;
@@ -62,7 +62,7 @@ legend([s1, s2, s3], {'ddaC', 'vada', 'vdaB'}, 'Location', 'best');
 xlabel('L1 Relative Weights');
 ylabel('L3 Relative Weights');
 xlim([-0.5 10])
-ylim([-0.5 11])
+ylim([-0.5 10])
 
 set(gcf,'renderer','Painters')
 set              (gca, ...
@@ -91,10 +91,27 @@ tprint           (          ...
     '-HR -eps -jpg',        ...
     pagesize);
 
+%save('data_output/Fig7C_rel_.mat', 'vector1', 'vector2')  % Save variables you want
 
 %% Plot l1
 
-Vsyn            = 10*1/mean_den; %mV generic spiking threshold in Gunay
+   % Given or known constants
+    Ee               = 40;% generic fly cell from Cuntz et al.
+    Ei               = 0;
+    Gm               = t{1}.Gm;      % S/cm2
+    GmU              = 10 * Gm;      % in nS/um2
+    delta            = compute_overshoot(mean_den, GmU, mean(t{1}.D), Ee, 8);
+    Vdist            = (8+delta)*1/mean_den; % 8mV generic spiking threshold in Gunay
+
+% Vdist estimates the voltage needed at a distal dendritic site to produce an 8 mV local depolarization with synaptic conductances.
+% The expression Vdist = (8 + delta=2) * 1 / mean_den approximates the current needed (Idist), assuming I = V * Gmpd.
+% The extra 2 mV is added to compensate for the fact that in conductance-based synapses,
+% Vsyn = Isyn * Gmpd + Gsyn — the synaptic conductance reduces voltage efficacy, so more current
+% (and thus more initial voltage) is required to reach the same 8 mV target.
+%
+% This formulation also assumes a synaptic density of 1 per unit length. Since our neurons use a lower
+% synaptic density (mean_den), each synapse must be stronger to maintain the same local depolarization.
+% Therefore, Vdist is scaled inversely with mean_den to ensure that Vsyn remains sufficient (~8 mV).
 
 % Preallocate matrices for storing results (12 mdiv for `i`, 6 columns for realtive weights)
 synrand_mean_store = zeros(length(t), 6);
@@ -116,15 +133,10 @@ for i = 1:length(t)
     end
     
     % Given or known constants
-    Ee               = 40; % generic fly cell from Cuntz et al.
-    Ei               = 0;
-    Gm               = tree.Gm;      % S/cm2
-    GmU              = 10 * Gm;      % in nS/um2
-        
-    Idist            = Gm * Vsyn * pi * mD * 10;             % pA/(0.01*0.7um)
-    gsynT            = Idist / Ee;                            % Total synaptic conductance
-    ge_total         = gsynT / 1000;                          % Total ge when homogeneous
-    Vdist            = (Idist / (1/mean_den)/10) ./ (t{1}.Gm * pi * mD + (gsynT/(1/mean_den)/10));
+    Idist            = Vdist*GmU * pi * mD;   % pA/(0.01*1/mean_den/um) to get units right
+    gsynT            = Idist / Ee; % Ohm's law
+    ge_total         = gsynT / 1000; % Total ge when homogeneous. /1000 to match units of syn_tree function
+    Vsyn             = (Idist/(1/mean_den)) ./ (GmU * pi * mD+ (gsynT/(1/mean_den)));
     gi               = zeros(N, 1);
     I                = zeros(N, 1);
     L    (i)         = sum  (len_tree (t{i})) ;    % in um
@@ -214,6 +226,10 @@ s1 = scatter(x1, y1, 10, ddaC, 'filled'); % ddaC color
 s2 = scatter(x2, y2, 10, vada, 'filled'); % vada color
 s3 = scatter(x3, y3, 10, vdaB, 'filled'); % vdaB color
 
+%save('data_output/Fig7D_vol_ddaC.mat', 'x1', 'y1');  % Save variables you want
+%save('data_output/Fig7D_vol_vada.mat', 'x2', 'y2');  % Save variables you want
+%save('data_output/Fig7D_vol_vbaB.mat', 'x3', 'y3');  % Save variables you want
+
 % Add error bars for each group
 % errorbar(x1, y1, std_y1, std_y1, std_x1, std_x1, 'o', ...
 %     'MarkerSize', 2, 'MarkerEdgeColor', ddaC, 'MarkerFaceColor', ddaC, 'CapSize', 0, 'Color', ddaC);
@@ -231,7 +247,7 @@ legend([s1, s2, s3], {'ddaC', 'vada', 'vdaB'}, 'Location', 'best');
 xlabel('Voltage L1 (mV)');
 ylabel('Voltage L3 (mV)');
 
-pagesize         = [5 4]; % (x, y) size in cm
+pagesize         = [5 5]; % (x, y) size in cm
 
 set(gcf,'renderer','Painters')
 set              (gca, ...
@@ -271,6 +287,9 @@ errorbar(rel_l1, mean_l1, std_l1, 'Color',c_l1 ,'MarkerSize', 2.5,...
          'DisplayName', 'L1', 'CapSize', 0, 'LineStyle', 'none', 'Marker', 'o');
 errorbar(rel_l3, mean_l3, std_l3, 'Color',c_l3 ,'MarkerSize', 2.5, ...
          'DisplayName', 'L3', 'CapSize', 0, 'LineStyle', 'none', 'Marker', 'o');
+     
+%save('data_output/Fig7E_rel_L1.mat', 'rel_l1', 'std_l1', 'mean_l1');  % Save variables you want
+%save('data_output/Fig7E_rel_L3.mat', 'rel_l3', 'std_l3', 'mean_l3');  % Save variables you want
 
 
 xlim             ([-0.1 10.5]);
@@ -300,7 +319,7 @@ compute_r2(weights_all_store(:),synrand_mean_store(:),'y')
 
 
 tprint           (          ...
-    'output_plots/Figure 6E - L1_L3 Voltage vs Rel Weights',   ...
+    'output_plots/Figure 7E - L1_L3 Voltage vs Rel Weights',   ...
     '-HR -eps -jpg',        ...
     pagesize);
 
@@ -312,6 +331,10 @@ errorbar(abs_l1, mean_l1, std_l1, 'Color',c_l1 ,'MarkerSize', 2.5,...
          'DisplayName', 'L3', 'CapSize', 0, 'LineStyle', 'none', 'Marker', 'o');
 errorbar(abs_l3, mean_l3, std_l3, 'Color',c_l3 ,'MarkerSize', 2.5,...
          'DisplayName', 'L1', 'CapSize', 0, 'LineStyle', 'none', 'Marker', 'o');
+     
+%save('data_output/Fig7E_abs_L1.mat', 'abs_l1', 'std_l1', 'mean_l1');  % Save variables you want
+%save('data_output/Fig7E_abs_L3.mat', 'abs_l3', 'std_l3', 'mean_l3');  % Save variables you want
+     
 
 xlim             ([-0.1 80]);
 ylim             ([-0.1 1.6]);
