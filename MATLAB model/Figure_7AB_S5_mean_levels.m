@@ -68,13 +68,13 @@ end
 save('data/t', 't');
 %% Plot l1
 
-    % Given or known constants
-    Ee               = 40;% generic fly cell from Cuntz et al.
-    Ei               = 0;
-    Gm               = tree.Gm;      % S/cm2
-    GmU              = 10 * Gm;      % in nS/um2
-    delta            = compute_overshoot(mean_den, GmU, mD, Ee, 8);
-    Vdist            = (8+delta)*1/mean_den; % 8mV generic spiking threshold in Gunay
+% Given or known constants
+Ee               = 40;% generic fly cell from Cuntz et al.
+Ei               = 0;
+Gm               = t{1}.Gm;      % S/cm2
+GmU              = 10 * Gm;      % in nS/um2
+delta            = compute_overshoot(mean_den, GmU, mD, Ee, 8);
+Vdist            = (8+delta)*1/mean_den; % 8mV generic spiking threshold in Gunay
 
 % Vdist estimates the voltage needed at a distal dendritic site to produce an 8 mV local depolarization with synaptic conductances.
 % The expression Vdist = (8 + delta=2) * 1 / mean_den approximates the current needed (Idist), assuming I = V * Gmpd.
@@ -108,74 +108,69 @@ for i = 1:length(t)
     I                = zeros  (N, 1);
     L    (i)         = sum  (len_tree (t{i})) ;    % in um
     n                = floor  (linspace (0, round(mean_den * L(i)), 50));
-    nn               = length (n);
+    nn               = 1; %length (n); (all synapses)
     RR               = zeros  (nn, 1);
     synprox          = zeros  (nn, 1);
     syndist          = zeros  (nn, 1);
     synact           = zeros  (nn, 1); % active synapses
     
     for counter = 1:nn
-        syns = round(mean_den * L(i));  % Number of synaptic entries to modify
-        
-        syndist = zeros(100,1); % Store 100 trials per counter
-        synprox = zeros(100,1); % Store 100 trials per counter
-        synact  = zeros(100,1); % Store node count per trial
-            
-        for trial = 1:100
-            
-            % Generate log-normal distributed ge values
-            ge_ln = lognrnd(0, 1, syns, 1);
-            ge_ln = ge_ln / sum(ge_ln) * (syns * ge_total);
-            
-            % Initialize ge with zeros
-            ge = zeros(N, 1);
-            
-            % Select 'syns' linearly spaced indices and update them
-            lin_indices = round(linspace(1, N, syns)); % Get 'syns' evenly spaced indices
-            ge(lin_indices) = ge_ln; % Add (ge_ln) only to these entries
-            
-            R = n(counter); % Set threshold R
-            
-            % ------- Processing gedist -------
-            gedist = ge;
-            [~, P] = sort(Pvec); % Sort Pvec in ascending order
-            
-            % Find the first R elements within lin_indices
-            valid_indices = intersect(P, lin_indices, 'stable'); % Keep order from P
-            if length(valid_indices) >= R
-                gedist(valid_indices(1:R)) = 0;  % Zero only first R valid indices
+        syndist_all = [];
+        synprox_all = [];
+        synact_all  = [];
+
+        for den = 1:10
+            % Sample density
+            mS = normrnd(mean_den, std_den);
+            if mS < min_den, mS = min_den; end
+            if mS > max_den, mS = max_den; end
+
+            syns = round(mS * L(i));
+
+            for trial = 1:100
+                % Generate log-normal synaptic weights
+                ge_ln = lognrnd(0, 1, syns, 1);
+                ge_ln = ge_ln / sum(ge_ln) * (syns * ge_total);
+
+                ge = zeros(N, 1);
+                lin_indices = round(linspace(1, N, syns));
+                ge(lin_indices) = ge_ln;
+
+                R = n(counter);
+
+                % ------- gedist -------
+                gedist = ge;
+                [~, P] = sort(Pvec);
+                valid_indices = intersect(P, lin_indices, 'stable');
+                if length(valid_indices) >= R
+                    gedist(valid_indices(1:R)) = 0;
+                end
+                syn = syn_tree(tree, gedist, gi, Ee, Ei, I, 'none');
+                syndist_all(end+1) = syn(1);  %#ok<*SAGROW>
+
+                % ------- geprox -------
+                geprox = ge;
+                [~, P] = sort(Pvec, 'descend');
+                valid_indices = intersect(P, lin_indices, 'stable');
+                if length(valid_indices) >= R
+                    geprox(valid_indices(1:R)) = 0;
+                end
+                syn = syn_tree(tree, geprox, gi, Ee, Ei, I, 'none');
+                synprox_all(end+1) = syn(1);
+
+                % Active synapses
+                synact_all(end+1) = nnz(geprox);
             end
-            
-            syn = syn_tree(tree, gedist, gi, Ee, Ei, I, 'none');
-            syndist(trial) = syn(1);
-            
-            % ------- Processing geprox -------
-            geprox = ge;
-            [~, P] = sort(Pvec, 'descend'); % Sort Pvec in descending order
-            
-            % Find the first R elements within lin_indices
-            valid_indices = intersect(P, lin_indices, 'stable'); % Keep order from P
-            if length(valid_indices) >= R
-                geprox(valid_indices(1:R)) = 0;  % Zero only first R valid indices
-            end
-            
-            syn = syn_tree(tree, geprox, gi, Ee, Ei, I, 'none');
-            synprox(trial) = syn(1);
-            
-            % Count active synapses
-            synact(trial) = length(find(geprox));
         end
-        
-        % Store the statistics for each counter
-            synprox_mean_store(i, counter) = mean(synprox);
-            synprox_std_store(i, counter)  = std(synprox);
-            syndist_mean_store(i, counter) = mean(syndist);
-            syndist_std_store(i, counter)  = std(syndist);            
-            nodes_all_store(i, counter)    = mean(synact);
+
+        % Average across all densities (1000 samples)
+        synprox_mean_store(i, counter) = mean(synprox_all);
+        synprox_std_store(i, counter)  = std(synprox_all);
+        syndist_mean_store(i, counter) = mean(syndist_all);
+        syndist_std_store(i, counter)  = std(syndist_all);
+        nodes_all_store(i, counter)    = mean(synact_all);
     end
-
 end
-
 
 %% Plot final voltage
 
@@ -188,8 +183,6 @@ hold             on;
 
 scatter(L(1:12), synprox_mean_store(1:12,1), 10, c_l1, 'filled');
 scatter(L(13:end), synprox_mean_store(13:end,1), 10, c_l3, 'filled');
-scatter(L(1:12), syndist_mean_store(1:12,1), 10, c_l1, 'filled');
-scatter(L(13:end), syndist_mean_store(13:end,1), 10, c_l3, 'filled');
 save('data_output/Fig7B.mat', 'L', 'synprox_mean_store');  % Save variables you want
 
 pagesize         = [5 4]; % (x, y) size in cm
@@ -198,7 +191,7 @@ yline(Vsyn, '--','linewidth',0.5); % Add label and line style
 
 xlabel  ('Length (\mum)');
 ylabel  ('Voltage (mV)');
-ylim([6 10]);
+ylim([4 12]);
 title ('Mean Model')
 set(gcf,'renderer','Painters')
 
@@ -213,7 +206,7 @@ set              (gca, ...
     'xscale',                  'log', ...
     'fontname',                'arial');
 
-nRMSE   = sqrt (mean (((synprox_mean_store(:,1) - Vsyn)./synprox_mean_store(:,1)).^2)) % 0.12% 
+nRMSE   = sqrt (mean (((synprox_mean_store(:,1) - Vsyn)./synprox_mean_store(:,1)).^2)) % 0.12%
 
 tprint           (          ...
     'output_plots/Figure 7B - L vs V',   ...
@@ -269,7 +262,7 @@ compute_r2([rw(:);rw(:)],[synprox_mean_store(1:12,:),synprox_mean_store(1:12,:)]
 
 
 tprint           (          ...
-    'output_plots/Figure 7 S6A - Rel Weights L1',   ...
+    'output_plots/Figure 7 S5A - Rel Weights L1',   ...
     '-HR -eps -jpg',        ...
     pagesize);
 
@@ -310,7 +303,7 @@ compute_r2([l1_abs(:);l1_abs(:)],[l1_prox(:);l1_dist(:)],'y')
 bin_averages = plotBinnedAverages([l1_abs(:);l1_abs(:)], [l1_prox(:);l1_dist(:)], 0:20:300);
 
 tprint           (          ...
-    'output_plots/Figure 7 S6A - Abs Weights L1',   ...
+    'output_plots/Figure 7 S5A - Abs Weights L1',   ...
     '-HR -eps -jpg',        ...
     pagesize);
 
@@ -365,7 +358,7 @@ compute_r2([rw(:);rw(:)],[synprox_mean_store(13:end,:),syndist_mean_store(13:end
 
 
 tprint           (          ...
-    'output_plots/Figure 7 S6B - Rel Weights L3',   ...
+    'output_plots/Figure 7 S5B - Rel Weights L3',   ...
     '-HR -eps -jpg',        ...
     pagesize);
 
@@ -407,7 +400,7 @@ compute_r2([l3_abs(:);l3_abs(:)],[l3_prox(:);l3_dist(:)],'y')
 bin_averages = plotBinnedAverages([l3_abs(:);l3_abs(:)], [l3_prox(:);l3_dist(:)], 0:100:1200);
 
 tprint           (          ...
-    'output_plots/Figure 7 S6B - Abs Weights L3',   ...
+    'output_plots/Figure 7 S5B - Abs Weights L3',   ...
     '-HR -eps -jpg',        ...
     pagesize);
 
