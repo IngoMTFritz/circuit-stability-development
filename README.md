@@ -17,7 +17,7 @@ This repository contains the code and data used to generate the figures for the 
 
 - **Data Files**:
   - `l1_PSD_areas.pkl` and `l3_PSD_areas.pkl`: Preprocessed data files used in the analysis (for Python notebooks).
-  - `MATLAB model/data_swc_processed/`: Folder containing SWC files iwht the neuron morphology data used by the MATLAB scripts.
+  - `MATLAB model/data_swc_processed/`: Folder containing SWC files with the neuron morphology data used by the MATLAB scripts.
   - `MATLAB model/data/density_l1_l3_dendrite.csv`: Data file for synapse densities used by the MATLAB scripts.
   - `MATLAB model/data/t.mat`: Output data file from the MATLAB script `Figure_6B_S6_mean_levels.m`.
 
